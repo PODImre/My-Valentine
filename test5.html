@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pour ma Valentine ❤️</title>
+    <style>
+        body {
+            margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: #fff5f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden;
+        }
+
+        #music-overlay {
+            position: fixed; inset: 0; background: #ffe3e3; z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.5s;
+        }
+
+        #container {
+            background: white; padding: 40px; border-radius: 40px; text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4); width: 340px; z-index: 10;
+        }
+
+        .bear-svg { width: 160px; margin-bottom: 20px; transition: 0.3s; }
+        .mouth { transition: 0.3s; fill: none; stroke: #5d4037; stroke-width: 2.5; stroke-linecap: round; }
+
+        h2 { color: #d81b60; font-size: 1.6rem; margin-bottom: 30px; line-height: 1.3; }
+
+        /* Groupe de boutons côte à côte au début */
+        .btn-group { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px;
+            align-items: center; 
+            height: 60px; 
+            position: relative; 
+        }
+        
+        button {
+            padding: 12px 28px; border: none; border-radius: 50px;
+            cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.2s;
+        }
+
+        #yes-btn { 
+            background: #ff4d6d; color: white; 
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+
+        #no-btn { 
+            background: #fce4ec; color: #d81b60; 
+            white-space: nowrap;
+            transition: 0.1s; /* Plus rapide pour l'esquive */
+        }
+
+        #final-screen {
+            display: none; position: fixed; inset: 0; background: #fff5f5; z-index: 1000;
+            flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .heart { position: absolute; color: #ff4d6d; animation: floatUp 4s linear forwards; }
+        @keyframes floatUp { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="music-overlay">
+        <div style="font-size: 50px; margin-bottom: 20px;">✉️</div>
+        <button onclick="startApp()" style="background: #ff4d6d; color: white;">Ouvrir ton message ❤️</button>
+    </div>
+
+    <audio id="bg-audio" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="container">
+        <svg id="bear" class="bear-svg" viewBox="0 0 100 100">
+            <circle cx="50" cy="55" r="35" fill="#f3e5f5"/>
+            <circle cx="30" cy="30" r="10" fill="#f3e5f5"/>
+            <circle cx="70" cy="30" r="10" fill="#f3e5f5"/>
+            <circle cx="42" cy="50" r="3" fill="#5d4037"/>
+            <circle cx="58" cy="50" r="3" fill="#5d4037"/>
+            <path id="bear-mouth" class="mouth" d="M42 65 Q50 72 58 65" />
+        </svg>
+
+        <h2 id="main-text">Mon amour, <br>veux-tu être ma Valentine ?</h2>
+
+        <div class="btn-group">
+            <button id="yes-btn" onclick="celebrate()">OUI !</button>
+            <button id="no-btn" onmouseover="escape()" onclick="escape()">Non...</button>
+        </div>
+    </div>
+
+    <div id="final-screen">
+        <div style="font-size: 80px; margin-bottom: 20px;">🧸❤️</div>
+        <h1 style="color: #d81b60; font-size: 2.5rem;">Je t'aime infiniment !</h1>
+        <p style="color: #880e4f; font-size: 1.3rem; max-width: 80%;">Merci de rendre ma vie si belle. <br>On se voit le 14 pour notre surprise ? ✨</p>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('no-btn');
+        const mouth = document.getElementById('bear-mouth');
+        const text = document.getElementById('main-text');
+        const audio = document.getElementById('bg-audio');
+
+        function startApp() {
+            document.getElementById('music-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('music-overlay').style.display = 'none';
+                audio.play();
+            }, 500);
+        }
+
+        function escape() {
+            // Calculer une position aléatoire sur tout l'écran
+            const padding = 20;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            
+            // On passe en position fixed pour qu'il puisse bouger partout
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+
+            // L'ours devient triste
+            mouth.setAttribute('d', 'M42 72 Q50 65 58 72');
+            text.innerHTML = "S'il te plaît... 🥺<br>Dis-moi oui !";
+            
+            const excuses = ["Tu es sûre ?", "Oups !", "Essaie encore !", "Pas par là !"];
+            noBtn.innerText = excuses[Math.floor(Math.random() * excuses.length)];
+        }
+
+        function celebrate() {
+            document.getElementById('final-screen').style.display = 'flex';
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.bottom = '-50px';
+                heart.style.fontSize = Math.random() * 30 + 15 + 'px';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 4000);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
